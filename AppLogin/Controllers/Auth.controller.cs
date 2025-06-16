@@ -1,7 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore; // If you are using Entity Framework Core for database access
-using AppLogin.Api; // Assuming you have a namespace for your API models or services
-using AppLogin.ViewModels; // Assuming you have a namespace for your view models
+using AppLogin.Application.Users.Commands;
+using AppLogin.Application.Users.Queries;
+using AppLogin.Application.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using AppLogin.ViewModels;
+using MediatR;
 
 /* To authentication */
 using Microsoft.AspNetCore.Authentication; // For authentication-related functionality
@@ -10,52 +12,46 @@ using System.Security.Claims;
 
 namespace AppLogin.Controllers
 {
-    public class AccessController : Controller
+    public class AuthController : Controller
     {
-        private readonly IDbContextFactory<AppDBContext> _appDBContext;
-        public AccessController(IDbContextFactory<AppDBContext> appDBContext) { _appDBContext = appDBContext; }
+        private readonly IMediator _mediator;
+        public AuthController(IMediator mediator) => _mediator = mediator;
 
         [HttpGet]
-        public IActionResult Login()
-        {
-            if (User.Identity!.IsAuthenticated) return RedirectToAction("Index", "Home");
-            return View();
-        }
+        public IActionResult Login() => User.Identity!.IsAuthenticated ? RedirectToAction("Index", "Home") : View();
 
         [HttpGet]
         public IActionResult Register() => View();
+        /*---------------------------------------------------------------------------------------------------------*/
 
+        /*--------------------------------------------------actions--------------------------------------------------*/
         /** 
          * This method handles user loggin by validating the provided information on form.
          * It also checks for existing of cookies to handle authentication.
          */
         [HttpPost]
-        public async Task<IActionResult> Login(LoginVM user)
+        public async Task<IActionResult> Login(AuthVM.Login user)
         {
-            // Validate the model state
             if (!ModelState.IsValid) return View(user); // Return the view with validation errors if the model state is invalid
-            // Check if the user exists in the database
-            await using var db = await _appDBContext.CreateDbContextAsync();
-            var existingUser = await db.Users.FirstOrDefaultAsync(u => u.Email == user.Email && u.Password == user.Password);
+            var existingUser = (await _mediator.Send(new GetUsersByEmailQuery(user.Email))).FirstOrDefault(u => u.Password == user.Password);
             if (existingUser == null)
             {
-                ModelState.AddModelError("", "Invalid email or password.");
-                ViewData["ErrorMessage"] = "Invalid email or password."; // Set an error message to be displayed in the view
+                //Can´t say if the email or password is invalid for security reasons
+                ModelState.AddModelError("Email", "Invalid email or password.");
+                ViewData["ErrorMessage"] = "Invalid email or password.";
                 return View(user);
             }
-            // Create a claims identity for the user
+            
             var claims = new List<Claim>
-            {
+            { //Create a claims authIdentity
                 new Claim(ClaimTypes.Name, existingUser.Username),
                 new Claim(ClaimTypes.Email, existingUser.Email),
                 new Claim("UserId", existingUser.Id.ToString())
             };
+
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var properties = new AuthenticationProperties() { AllowRefresh = true }; /* Allow the authentication cookie to be refreshed */
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), properties);
-
-
-            // Redirect to a success page or dashboard if login is successful
             return RedirectToAction("Index", "Home"); // Assuming you have a HomeController with an Index action
         }
 
@@ -64,41 +60,27 @@ namespace AppLogin.Controllers
          * It also checks for existing users with the same email.
          */
         [HttpPost]
-        public async Task<IActionResult> Register(RegisterVM user)
+        public async Task<IActionResult> Register(UserVM.Register user)
         {
-            // Validate the model state
-            if (user.Password != user.ConfirmPassword)
-            {
-                ModelState.AddModelError("confirmPassword", "Passwords do not match.");
-                ViewData["ErrorMessage"] = "Passwords do not match."; // Set an error message to be displayed in the view
-                return View(user);
-            }
             if (!ModelState.IsValid) View(user); // Return the view with validation errors if the model state is invalid
-
-            // Verify if email exist
-            await using var db = await _appDBContext.CreateDbContextAsync();
-            var existingUser = await db.Users.FirstOrDefaultAsync(u => u.Email == user.Email);
+            var existingUser = (await _mediator.Send(new GetUsersByEmailQuery(user.Email))).FirstOrDefault();
             if (existingUser != null)
-            {
+            { //email already exists, add an error to the model state
                 ModelState.AddModelError("email", "Email already exists.");
                 ViewData["ErrorMessage"] = "Email already exists.";
                 return View(user);
             }
 
-            // first of all, create a new user object
-            var newUser = new Models.User()
-            {
+            var input = new UserInput()
+            { //build user model
                 Email = user.Email,
                 Username = user.Username,
-                Password = user.Password
+                Password = user.Password,
             };
 
-            // Add the new user to the database
-            db.Users.Add(newUser);
-            await db.SaveChangesAsync();
-
+            var newUser = await _mediator.Send(new CreateUserCommand(input)); //CQRS
             // Redirect to a success page or login page if registration is successful
-            if (newUser.Id != 0) return RedirectToAction("Login", "Access");
+            if (newUser.Id != 0) return RedirectToAction("Login", "Auth");
             ModelState.AddModelError("", "Registration failed. Please try again.");
             ViewData["ErrorMessage"] = "Registration failed. Please try again."; // Set an error message to be displayed in the view
             return View();

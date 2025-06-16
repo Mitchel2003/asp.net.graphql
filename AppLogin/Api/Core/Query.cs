@@ -3,10 +3,10 @@ using System.Linq.Expressions;
 
 namespace AppLogin.Api.Core;
 
-public class QueryService<T> where T : class
+public class Query<T> where T : class
 {
     private readonly IDbContextFactory<AppDBContext> _factory;
-    public QueryService([Service] IDbContextFactory<AppDBContext> factory) { _factory = factory; }
+    public Query([Service] IDbContextFactory<AppDBContext> factory) { _factory = factory; }
 
     /**
      * Retrieves all entities of type T from the database.

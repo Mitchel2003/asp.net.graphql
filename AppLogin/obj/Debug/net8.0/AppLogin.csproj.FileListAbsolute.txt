@@ -211,3 +211,5 @@ C:\Users\Michael\Documents\AppLogin\AppLogin\bin\Debug\net8.0\HotChocolate.Valid
 C:\Users\Michael\Documents\AppLogin\AppLogin\bin\Debug\net8.0\System.IO.Hashing.dll
 C:\Users\Michael\Documents\AppLogin\AppLogin\bin\Debug\net8.0\Yarp.ReverseProxy.dll
 C:\Users\Michael\Documents\AppLogin\AppLogin\bin\Debug\net8.0\System.Linq.Dynamic.Core.dll
+C:\Users\Michael\Documents\AppLogin\AppLogin\bin\Debug\net8.0\MediatR.dll
+C:\Users\Michael\Documents\AppLogin\AppLogin\bin\Debug\net8.0\MediatR.Contracts.dll

@@ -12,16 +12,16 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddPooledDbContextFactory<AppDBContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("conection")));
-builder.Services.AddScoped(typeof(MutationService<>));
-builder.Services.AddScoped(typeof(QueryService<>));
-
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+builder.Services.AddScoped(typeof(Mutation<>));
+builder.Services.AddScoped(typeof(Query<>));
 
 // Configure cookie authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
 {
-    options.LoginPath = "/Access/Login"; // Redirect to the login page if not authenticated
+    options.LoginPath = "/Auth/Login"; // Redirect to the login page if not authenticated
     options.ExpireTimeSpan = TimeSpan.FromMinutes(30); // Set the cookie expiration time
-    options.AccessDeniedPath = "/Access/AccessDenied"; // Redirect to access denied page
+    options.AccessDeniedPath = "/Auth/AuthDenied"; // Redirect to auth denied page
 });
 
 // Define GraphQL services
@@ -41,9 +41,11 @@ if (!app.Environment.IsDevelopment()) { app.UseExceptionHandler("/Home/Error"); 
 
 app.UseStaticFiles();
 app.UseRouting();
-app.UseAuthentication(); // Enable authentication middleware
+
+// Enable authentication middleware
+app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllerRoute(name: "default", pattern: "{controller=Access}/{action=Login}/{id?}");
+app.MapControllerRoute(name: "default", pattern: "{controller=Auth}/{action=Login}/{id?}");
 app.MapGraphQL("/graphql"); // Use GraphQL endpoint
 app.Run();

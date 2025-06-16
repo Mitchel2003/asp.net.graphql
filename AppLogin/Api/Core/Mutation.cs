@@ -3,11 +3,11 @@ using System.Linq.Expressions;
 using System.Reflection;
 
 namespace AppLogin.Api.Core;
-public class MutationService<T> where T : class, new()
+public class Mutation<T> where T : class, new()
 {
     private readonly IDbContextFactory<AppDBContext> _factory;
     private static readonly Func<T> _instance = CreateInstanceFactory();
-    public MutationService(IDbContextFactory<AppDBContext> factory) { _factory = factory; }
+    public Mutation([Service] IDbContextFactory<AppDBContext> factory) { _factory = factory; }
 
     /**
      * Create a new entity of the specified model type.
@@ -64,7 +64,8 @@ public class MutationService<T> where T : class, new()
     /*--------------------------------------------------tools--------------------------------------------------*/
     /**
      * Creates a factory method to instantiate T using Expression Trees.
-     * This is more efficient than Activator.CreateInstance for performance-critical scenarios.
+     * This is more efficient than Activator.CreateInstance<T>() for performance-critical scenarios.
+     * We avoid reflection at runtime by compiling the expression tree that has been delegate.
      */
     private static Func<T> CreateInstanceFactory()
     {
@@ -76,6 +77,7 @@ public class MutationService<T> where T : class, new()
     /**
      * Use reflection to map properties from a DTO to the entity
      * This method assumes that the DTO has properties that match the entity's properties.
+     * This focus is perfect when working with GraphQL and we want to map DTOs to entities dynamically.
      */
     private static void ApplyProperties<TInput>(T target, TInput source) where TInput : class
     { //Determine the properties of the source type; in other words, the DTO. REMEMBER IT...
