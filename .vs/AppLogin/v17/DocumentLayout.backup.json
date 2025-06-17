@@ -1,12 +1,54 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Users\\Michael\\Documents\\AppLogin\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{B929EAF6-8BAC-4325-BEB9-93BADAC7761C}|AppLogin\\AppLogin.csproj|c:\\users\\michael\\documents\\applogin\\applogin\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B929EAF6-8BAC-4325-BEB9-93BADAC7761C}|AppLogin\\AppLogin.csproj|solutionrelative:applogin\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B929EAF6-8BAC-4325-BEB9-93BADAC7761C}|AppLogin\\AppLogin.csproj|c:\\users\\michael\\documents\\applogin\\applogin\\controllers\\auth.controller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B929EAF6-8BAC-4325-BEB9-93BADAC7761C}|AppLogin\\AppLogin.csproj|solutionrelative:applogin\\controllers\\auth.controller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": []
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Auth.controller.cs",
+              "DocumentMoniker": "C:\\Users\\Michael\\Documents\\AppLogin\\AppLogin\\Controllers\\Auth.controller.cs",
+              "RelativeDocumentMoniker": "AppLogin\\Controllers\\Auth.controller.cs",
+              "ToolTip": "C:\\Users\\Michael\\Documents\\AppLogin\\AppLogin\\Controllers\\Auth.controller.cs",
+              "RelativeToolTip": "AppLogin\\Controllers\\Auth.controller.cs",
+              "ViewState": "AgIAADIAAAAAAAAAAAAIwFIAAAA7AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-16T22:58:25.924Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\Michael\\Documents\\AppLogin\\AppLogin\\Program.cs",
+              "RelativeDocumentMoniker": "AppLogin\\Program.cs",
+              "ToolTip": "C:\\Users\\Michael\\Documents\\AppLogin\\AppLogin\\Program.cs",
+              "RelativeToolTip": "AppLogin\\Program.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAADEAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-16T22:55:30.867Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
     }
   ]
 }

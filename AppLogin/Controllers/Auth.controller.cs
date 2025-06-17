@@ -1,5 +1,4 @@
-using AppLogin.Application.Users.Commands;
-using AppLogin.Application.Users.Queries;
+using AppLogin.Application.Handlers;
 using AppLogin.Application.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using AppLogin.ViewModels;
@@ -33,7 +32,10 @@ namespace AppLogin.Controllers
         public async Task<IActionResult> Login(AuthVM.Login user)
         {
             if (!ModelState.IsValid) return View(user); // Return the view with validation errors if the model state is invalid
-            var existingUser = (await _mediator.Send(new GetUsersByEmailQuery(user.Email))).FirstOrDefault(u => u.Password == user.Password);
+            var existingUser = (await _mediator.Send(new GetUsersByEmail(user.Email))).FirstOrDefault(u => u.Password == user.Password);
+
+            Console.WriteLine($"User: ${existingUser?.Username}"); // Debugging output to console
+
             if (existingUser == null)
             {
                 //Can´t say if the email or password is invalid for security reasons
@@ -63,7 +65,7 @@ namespace AppLogin.Controllers
         public async Task<IActionResult> Register(UserVM.Register user)
         {
             if (!ModelState.IsValid) View(user); // Return the view with validation errors if the model state is invalid
-            var existingUser = (await _mediator.Send(new GetUsersByEmailQuery(user.Email))).FirstOrDefault();
+            var existingUser = (await _mediator.Send(new GetUsersByEmail(user.Email))).FirstOrDefault();
             if (existingUser != null)
             { //email already exists, add an error to the model state
                 ModelState.AddModelError("email", "Email already exists.");
@@ -78,7 +80,7 @@ namespace AppLogin.Controllers
                 Password = user.Password,
             };
 
-            var newUser = await _mediator.Send(new CreateUserCommand(input)); //CQRS
+            var newUser = await _mediator.Send(new CreateUser(input)); //CQRS
             // Redirect to a success page or login page if registration is successful
             if (newUser.Id != 0) return RedirectToAction("Login", "Auth");
             ModelState.AddModelError("", "Registration failed. Please try again.");

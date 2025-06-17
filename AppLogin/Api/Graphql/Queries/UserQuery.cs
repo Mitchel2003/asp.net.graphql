@@ -1,15 +1,12 @@
-using AppLogin.Application.Users.Queries;
+using AppLogin.Application.Handlers;
 using AppLogin.Models;
 using MediatR;
 
-namespace AppLogin.Api.Queries;
+namespace AppLogin.Api.Graphql.Queries;
 
 [ExtendObjectType("Query")]
 public class UserQuery
 {
-    private readonly IMediator _mediator;
-    public UserQuery(IMediator mediator) { _mediator = mediator; }
-
     /**
      * Retrieves all users from the database.
      * @return A list of all users.
@@ -17,7 +14,7 @@ public class UserQuery
     [UseProjection]
     [UseFiltering]
     [UseSorting]
-    public async Task<IEnumerable<User>> GetUsers() => await _mediator.Send(new GetUsersQuery());
+    public async Task<IEnumerable<User>> GetUsers([Service] IMediator mediator) => await mediator.Send(new GetUsers());
 
     /**
      * Retrieves a user by their ID.
@@ -27,7 +24,7 @@ public class UserQuery
     [UseProjection]
     [UseFiltering]
     [UseSorting]
-    public async Task<User?> GetUserById(int id) => await _mediator.Send(new GetUserByIdQuery(id));
+    public async Task<User?> GetUserById([Service] IMediator mediator, int id) => await mediator.Send(new GetUserById(id));
 
     /**
      * Retrieves users by their email address.
@@ -37,5 +34,5 @@ public class UserQuery
     [UseProjection]
     [UseFiltering]
     [UseSorting]
-    public async Task<IEnumerable<User>> GetUsersByEmail(string email) => await _mediator.Send(new GetUsersByEmailQuery(email));
+    public async Task<IEnumerable<User>> GetUsersByEmail([Service] IMediator mediator, string email) => await mediator.Send(new GetUsersByEmail(email));
 }

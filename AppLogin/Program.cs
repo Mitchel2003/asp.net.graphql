@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using AppLogin.Api.Graphql.Mutations;
 using Microsoft.EntityFrameworkCore;
+using AppLogin.Api.Graphql.Queries;
 using AppLogin.Application.Shared;
-using AppLogin.Api.Mutations;
-using AppLogin.Api.Queries;
 using AppLogin.Api.Core;
 using AppLogin.Models;
 using AppLogin.Api;
@@ -30,8 +30,8 @@ builder.Services.AddGraphQLServer()
     .AddQueryType(d => d.Name("Query")) //root "Query"
     .AddMutationType(d => d.Name("Mutation")) //root "Mutation"
     .AddAllModelTypes(typeof(User).Assembly, "AppLogin.Models") //models
-    .AddAllExtensions(typeof(UserQuery).Assembly, "AppLogin.Api.Queries") //queries
-    .AddAllExtensions(typeof(UserMutation).Assembly, "AppLogin.Api.Mutations") //mutations
+    .AddAllExtensions(typeof(UserQuery).Assembly, "AppLogin.Api.Graphql.Queries") //queries
+    .AddAllExtensions(typeof(UserMutation).Assembly, "AppLogin.Api.Graphql.Mutations") //mutations
     .AddProjections().AddFiltering().AddSorting();
 
 var app = builder.Build();
